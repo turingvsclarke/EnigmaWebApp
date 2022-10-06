@@ -1,0 +1,29 @@
+<%
+# We will have a dropdown menu here that allows the user to delete a machine
+# It will 
+name_list = c.execute("SELECT * from enigmas")
+
+%>
+<html lang="en-US">
+<head>
+    <title>Deletion</title>
+    <meta charset = "UTF-8">
+</head>
+<body>
+    <form action="/DeletingMachine" method = "post">
+        Select Machine for Deletion:
+        <select name = "enigma_id">
+                % for x in name_list:
+                <option value = "{{x['id']}}">{{x['name']}}</option>
+                % end
+        </select>
+        <p>
+        <input type = "checkbox" name="deletion_confirmation" required>
+        <label for = "deletion_confirmation">I understand that this action is irrevocable and could cause me great emotional trauma</label>
+        </p>
+        <p>
+            <button type = "submit">Delete</button>
+        </p>
+    </form>
+</body>
+</html>

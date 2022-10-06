@@ -1,0 +1,63 @@
+<%
+# On this page display all the machines, their sizes, and create links to another page that will display all
+# the rotors for each Enigma and their values, as well as the reflector. For each enigma title make a form with its
+# title as a link that routes to a different page sending that page the Enigma's id
+# Create a function that is passed the id of an enigma and returns how many rotors it has
+
+result = c.execute("SELECT * FROM enigmas")
+ids = []
+names = []
+sizes = []
+for x in result:
+    ids.append(x['id'])
+    names.append(x['name'])
+end
+# Find out how many rotors there are for each machine
+for x in ids:
+    result = c.execute("SELECT * FROM enigma_rotors WHERE enigma_id = ?",(x,))
+    size = 0
+    for y in result:
+        size+=1
+    end
+    sizes.append(size)
+end
+enigmaDB.commit()
+%>
+<!DOCTYPE html>
+<html lang = "en-US">
+<head>
+    <title>Enigma Machines</title>
+    <meta charset = "UTF-8">
+</head>
+<body>
+    <h1>Machines</h1>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Size(# of rotors)</th>
+        </tr>
+        %for x in range(len(ids)):
+        <tr>
+            <td>{{ids[x]}}</td>
+            <td>
+                <form action = "/RotorTable" method = "post">
+                    <input type = "hidden" name = "enigma_id" value = "{{ids[x]}}">
+                    <button type = "submit">{{names[x]}}</button>
+                </form>
+            </td>
+            <td>{{sizes[x]}}</td>
+        </tr>
+        %end
+    </table>
+    <form action = '/addMachine' method = "get">
+        <button type = "submit">Create New Machine</button>
+    </form>
+    <form action='/DeleteMachine' method = "get">
+        <button type = "submit">Delete Machine</button>
+    </form>
+    <form action = '/' method = "get">
+        <button type = "submit">Menu</button>
+    </form>
+</body>
+</html>

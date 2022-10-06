@@ -1,0 +1,74 @@
+<%
+from bottle import request
+from Enigma import*
+
+# We've been passed the Enigma name and title. It's time to create an Enigma machine and store it in a database
+# with the rotors in a corresponding site
+
+enigma_title = request.forms.get("machine_name")
+enigma_size = int(request.forms.get("Rotor_number"))
+
+# check to make sure that that name isn't already in the database
+def checkforname(name):
+    copycat=False
+    result = c.execute("SELECT * FROM enigmas WHERE name = ?",(name,))
+    for x in result:
+        copycat = True
+    end
+    return copycat
+end
+copycat = checkforname(enigma_title)
+
+if not copycat:
+
+    # We generate a reflector from the Engima.py module
+    reflector = createReflector()
+
+    # We generate a bunch of rotors from the Enigma module and insert those into our database
+    # Generate an ordered list of these id's to be stuck into the enigma_rotor database
+    rotor_ids = []
+    for x in range(enigma_size):
+        # generate a rotor
+        rotor = createRotor()
+
+        # stick that rotor into the rotor table
+        c.execute("""INSERT INTO rotors (value) VALUES (?)""",(rotor,))
+        rotor_ids.append(c.lastrowid)
+    end
+
+    # Using these titles and names we can store it in our database. We also want to find the enigma id
+    # and pass it to the enigma_rotor database
+    c.execute("""INSERT INTO enigmas (name,reflector) VALUES (?,?)""",(enigma_title,reflector))
+
+    enigma_id = c.lastrowid
+
+    # We now insert the enigma machine and each rotor into the enigma_rotor database
+    for x in rotor_ids:
+
+        c.execute("""INSERT INTO enigma_rotors (enigma_id,rotor_id) VALUES (?,?)""",(enigma_id,x))
+    end
+    enigmaDB.commit()
+end
+%>
+<!DOCTYPE html>
+<html lang = "en-US">
+<head>
+    <title>Uploading Machine</title>
+    <meta charset = "UTF-8">
+</head>
+<body>
+    %if copycat==True:
+    <h1>Error</h1>
+    <p>
+        There is already an Enigma machine named {{enigma_title}}. Please delete {{enigma_title}} first
+        and then try adding your machine again.
+    </p>
+    %end
+    %if copycat==False:
+    <h1>Uploading Machine...</h1>
+    %end
+    <form action = "/" method = "get">
+        <button type = "submit">Menu</button>
+    </form>
+</body>
+</html>

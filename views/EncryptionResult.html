@@ -1,0 +1,56 @@
+<%
+from bottle import request
+from Enigma import*
+# get the name of the machine and the plaintext using a bottle request
+
+enigma_id = request.forms.get("enigma_title")
+plaintext = request.forms.get("plaintext")
+state = int((request.forms.get("setting")))
+
+# We need our array of rotors to be able to properly initiate our Enigma object
+# Find the id of that machine's name
+
+reflector = c.execute("SELECT * FROM enigmas WHERE id = ?", (enigma_id,)).fetchone()
+reflector = reflector['reflector']
+
+# Create a list of all the rotor ids corresponding to that enigma id from the enigma_rotors table
+result = c.execute("SELECT * FROM enigma_rotors WHERE enigma_id = ?", (enigma_id,))
+
+rotors = []
+for x in result:
+
+    # get the rotor id from this tuple of data from the enigma_rotor table
+    rotor_id = int(x['rotor_id'])    
+
+    # get the rotor value at that id by finding a tuple of data
+    rotor = c.execute("SELECT * FROM rotors WHERE id = ?",(rotor_id,)).fetchone()
+    rotor = rotor['value']
+
+    rotors.append(rotor)
+# For each of those rotor ids we need to get their value and append them to a rotors array
+
+# We need to find the correct machine, its correct rotors, and encrypt that
+
+enigma = Enigma(state,len(rotors),rotors,reflector)
+
+encryption = encrypt(plaintext,enigma)
+
+%>
+<!DOCTYPE html>
+<html lang = "en-US">
+<head>
+    <title>Encryption</title>
+    <meta charset = "UTF-8">
+</head>
+<body>
+    <p>
+        Encrypted Message: {{ encryption }}
+    </p>
+    <form action = "/MachineTable" method = "get">
+        <button type = "sumbit">View Machines</button>
+    </form>
+    <form action = "/" method = "get">
+        <button type = "submit">Menu</button>
+    </form>
+</body>
+</html>

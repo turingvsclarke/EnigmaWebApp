@@ -1,0 +1,60 @@
+<%
+from bottle import request
+# This table is going to display a table of all the rotors that correspond to the machine that was
+# submitted via the MachineTable page
+
+enigma_id = int(request.forms.get("enigma_id"))
+reflector = c.execute("SELECT * FROM enigmas WHERE id= ?",(enigma_id,)).fetchone()
+reflector = reflector['reflector']
+result = c.execute("SELECT * FROM enigma_rotors WHERE enigma_id = ?", (enigma_id,))
+ids = []
+rotors = []
+i=0
+for x in result:
+    id = x['rotor_id']
+    ids.append(id)
+end
+for x in ids:
+    new_result=c.execute("SELECT * FROM rotors WHERE id = ?",(x,)).fetchone()
+    rotors.append(new_result['value'])
+end
+i=0
+%>
+<!DOCTYPE html>
+<html lang = "en-US">
+<head>
+    <meta charset="UTF-8">
+    <Title>Machine Specs</Title>
+</head>
+<body>
+    <h>
+        Specs of Machine {{enigma_id}}
+    </h>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Rotor</th>
+            <th>Reflector</th>
+        </tr>
+        %for x in range(len(rotors)):
+        <tr>
+            <td>{{ids[x]}}</td>
+            <td>{{rotors[x]}}</td>
+            %if i==0:
+            <td>{{reflector}}</td>
+            %end
+        </tr>
+        %i+=1
+        %end    
+    </table>
+
+    <form action = "/DeleteMachine" method="get">
+        <input type = "hidden" name="enigma_id" value = "{{enigma_id}}">
+        <button type="submit">Delete</button>
+    </form>
+    <form action = "/MachineTable" method="get">
+        <button type = "submit">Machines</button>
+    </form>
+
+</body>
+</html>

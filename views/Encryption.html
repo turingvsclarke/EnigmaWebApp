@@ -1,0 +1,35 @@
+<%
+
+# We need to create some python code that finds all the names of the Enigmas and returns them
+name_list = c.execute("SELECT * from enigmas")
+
+%>
+<!DOCTYPE html>
+<html lang = "en-US">
+<head>
+    <Title>Encryption Fields</Title>
+    <meta charset = "UTF-8">
+</head>
+<body>
+    <h1>Enigma Encryption</h1>
+    <form action = "/EncryptionResult" method = "post">
+        <p>
+            <select name = "enigma_title">
+                % for x in name_list:
+                <option value = "{{x['id']}}">{{x['name']}}</option>
+                % end
+            </select>
+        </p>
+        Setting:<input type = "number" name = "setting" required>
+        <p>
+            Plaintext:<input type = "text" name = "plaintext" required>
+        </p>
+        <button type = "submit">Encrypt</button>
+    </form>
+
+
+
+
+
+</body>
+</html>

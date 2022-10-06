@@ -1,0 +1,20 @@
+<%
+from bottle import request
+enigma_id = int(request.forms.get("enigma_id"))
+
+x=c.execute("SELECT * FROM enigmas WHERE id = ?",(enigma_id,)).fetchone()
+name = x['name']
+c.execute("DELETE FROM enigmas WHERE id = ?",(enigma_id,))
+
+enigmaDB.commit()
+%>
+<html>
+
+<body>
+    <h1>Deleting {{name}}...</h1>
+    <form action="/MachineTable" method = "get">
+        <button type="submit">Machines</button>
+    </form>
+</body>
+
+</html>

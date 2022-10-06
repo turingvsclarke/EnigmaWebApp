@@ -2,6 +2,6 @@ BACKGROUND: This project is a bottle.py app. It is a simple Enigma Machine emula
 
 DESCRIPTION: This site allows a user to create an Enigma machine with any number of rotors(more rotors decreases the probability of codebreaking via brute force). Once a machine has been stored in the database, the user may use it to encrypt messages. In order to decrypt a message, you must have the setting number that it was encrypted with. For instance, the machine Mach1 has 65 rotors. The word "hello" encrypts to "wtpbo" using setting 45. To encrypt, we must know the setting to use is 45, and then enter "wtpbo", generating "hello" as output. Any other setting fails to decrypt the initial message.
 
-Look here to see a demonstration: 
+Look here to see a demonstration: https://www.youtube.com/watch?v=jV4n0X4mc-o
 
 Running the program: Download the repository and run "python3 app.py" from the command line. The project will then be hosted at http://localhost:8080/.
